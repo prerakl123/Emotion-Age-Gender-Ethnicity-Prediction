@@ -1,6 +1,7 @@
 import os
 import secrets
 import time
+from pathlib import Path
 
 import cv2
 from cv2.data import haarcascades
@@ -8,8 +9,16 @@ from cv2.data import haarcascades
 hcc = cv2.CascadeClassifier(haarcascades + 'haarcascade_frontalface_default.xml')
 
 
-def record(seconds: float = 5.0):
-    cap = cv2.VideoCapture(0)
+def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool = False) -> Path:
+    """
+    Captures and detects faces, then saves in a
+    :param source: source of video (camera by default)
+    :param seconds: capture length
+    :param num_pics: minimum number of images
+    :param enforce_num: enforce the minimum number of images
+    :return: directory hex
+    """
+    cap = cv2.VideoCapture(source)
 
     start_time = time.time()
     img_count = 0
@@ -30,8 +39,27 @@ def record(seconds: float = 5.0):
         if cv2.waitKey(25) == ord('q'):
             break
 
+    if img_count < num_pics:
+        print(f"Number of faces captured less than {num_pics=}")
+
+        if enforce_num is True:
+            print("Resuming capture...")
+            while cap.isOpened() and img_count < enforce_num:
+                ret, frame = cap.read()
+                faces = hcc.detectMultiScale(frame, scaleFactor=1.2, minNeighbors=6)
+
+                for (x, y, w, h) in faces:
+                    cv2.imwrite(f"./db/{db_dir}/{img_count}.jpg", frame[y:y + h, x:x + w])
+                    cv2.rectangle(frame, (x, y), (x + w, y + h), (255, 0, 0), 1)
+                    img_count += 1
+
+                cv2.imshow("Camera", frame)
+                if cv2.waitKey(25) == ord('q'):
+                    break
+
     cap.release()
     cv2.destroyAllWindows()
+    return Path(f'./db') / db_dir
 
 
-record(50.0)
+print(record(10.0, enforce_num=True))
