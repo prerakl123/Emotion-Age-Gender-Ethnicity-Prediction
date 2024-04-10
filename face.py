@@ -28,6 +28,10 @@ def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool
         ret, frame = cap.read()
         faces = hcc.detectMultiScale(frame, scaleFactor=1.2, minNeighbors=6)
 
+        if len(faces) > 1:
+            print("WARNING: Multiple faces detected!")
+            continue
+
         os.makedirs(f"./db/{db_dir}", exist_ok=True)
 
         for (x, y, w, h) in faces:
@@ -44,9 +48,13 @@ def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool
 
         if enforce_num is True:
             print("Resuming capture...")
-            while cap.isOpened() and img_count < enforce_num:
+            while cap.isOpened() and img_count <= num_pics:
                 ret, frame = cap.read()
                 faces = hcc.detectMultiScale(frame, scaleFactor=1.2, minNeighbors=6)
+
+                if len(faces) > 1:
+                    print("WARNING: Multiple faces detected!")
+                    continue
 
                 for (x, y, w, h) in faces:
                     cv2.imwrite(f"./db/{db_dir}/{img_count}.jpg", frame[y:y + h, x:x + w])
@@ -62,4 +70,5 @@ def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool
     return Path(f'./db') / db_dir
 
 
-print(record(10.0, enforce_num=True))
+if __name__ == '__main__':
+    print(record(seconds=10.0, enforce_num=True))

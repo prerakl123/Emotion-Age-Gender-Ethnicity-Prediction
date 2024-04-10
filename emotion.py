@@ -15,6 +15,7 @@ from deepface.modules.streaming import (
 )
 
 import face
+from db import DB
 
 # logger = Logger('commons.realtime')
 # logger.log_level = logging.CRITICAL
@@ -34,7 +35,8 @@ def analysis(
     detector_backend="opencv",
     distance_metric="cosine",
     enable_face_analysis=True,
-    source=0
+    source=0,
+    person_name: str = None
 ):
     """
     Run real time face recognition and facial attribute analysis
@@ -56,6 +58,9 @@ def analysis(
 
         source (Any): The source for the video stream (default is 0, which represents the
             default camera).
+
+        person_name (str): person name
+
     Returns:
         None
     """
@@ -111,6 +116,7 @@ def analysis(
             detector_backend=detector_backend,
             distance_metric=distance_metric,
             model_name=model_name,
+            person_name=person_name
         )
 
         cv2.imshow("img", img)
@@ -128,7 +134,7 @@ def search_identity(
     db_path: str,
     model_name: str,
     detector_backend: str,
-    distance_metric: str,
+    distance_metric: str
 ) -> Tuple[Optional[str], Optional[np.ndarray]]:
     """
     Search an identity in facial database.
@@ -196,6 +202,7 @@ def search_identity(
     else:
         target_img = cv2.imread(target_path)
 
+    print(target_path)
     return target_path.split("/")[-1], target_img
 
 
@@ -207,6 +214,7 @@ def perform_facial_recognition(
     detector_backend: str,
     distance_metric: str,
     model_name: str,
+    person_name: str = None
 ) -> np.ndarray:
     """
     Perform facial recognition
@@ -223,30 +231,21 @@ def perform_facial_recognition(
             'euclidean', 'euclidean_l2' (default is cosine).
         model_name (str): Model for face recognition. Options: VGG-Face, Facenet, Facenet512,
             OpenFace, DeepFace, DeepID, Dlib, ArcFace, SFace and GhostFaceNet (default is VGG-Face).
+        person_name (str): person name
     Returns:
         img (np.ndarray): image with identified face informations
     """
     for idx, (x, y, w, h) in enumerate(faces_coordinates):
         detected_face = detected_faces[idx]
-        target_label, target_img = search_identity(
+        _, target_img = search_identity(
             detected_face=detected_face,
             db_path=db_path,
             detector_backend=detector_backend,
             distance_metric=distance_metric,
-            model_name=model_name,
+            model_name=model_name
         )
-        if target_label is None:
-            continue
 
-        img = overlay_identified_face(
-            img=img,
-            target_img=target_img,
-            label=target_label,
-            x=x,
-            y=y,
-            w=w,
-            h=h,
-        )
+        img = overlay_identified_face(img=img, target_img=target_img, label=person_name, x=x, y=y, w=w, h=h)
 
     return img
 
@@ -288,13 +287,9 @@ def perform_demography_analysis(
 
         img = overlay_emotion(img=img, emotion_probas=demography["emotion"], x=x, y=y, w=w, h=h)
         img = overlay_age_gender(
-            img=img,
-            apparent_age=demography["age"],
+            img=img, apparent_age=demography["age"],
             gender=demography["dominant_gender"][0:1],  # M or W
-            x=x,
-            y=y,
-            w=w,
-            h=h,
+            x=x, y=y, w=w, h=h
         )
     return img
 
@@ -405,14 +400,9 @@ def overlay_identified_face(
 
             # connect face and text
             cv2.line(
-                img,
-                (x + int(w / 2), y + h),
-                (
-                    x + int(w / 2) + int(w / 4),
-                    y + h + int(IDENTIFIED_IMG_SIZE / 2),
-                ),
-                (67, 67, 67),
-                1,
+                img, (x + int(w / 2), y + h),
+                (x + int(w / 2) + int(w / 4), y + h + int(IDENTIFIED_IMG_SIZE / 2)),
+                (67, 67, 67), 1
             )
             cv2.line(
                 img, (x + int(w / 2) + int(w / 4), y + h + int(IDENTIFIED_IMG_SIZE / 2)),
@@ -527,14 +517,14 @@ def overlay_age_gender(
 
     # show its age and gender on the top of the image
     if y - IDENTIFIED_IMG_SIZE + int(IDENTIFIED_IMG_SIZE / 5) > 0:
-        triangle_coordinates = np.array([
-            (x + int(w / 2), y),
-            (x + int(w / 2) - int(w / 10),
-             y - int(IDENTIFIED_IMG_SIZE / 3)),
-            (x + int(w / 2) + int(w / 10),
-             y - int(IDENTIFIED_IMG_SIZE / 3)),
-        ])
-        cv2.drawContours(img, [triangle_coordinates], 0, info_box_color, -1)
+        # triangle_coordinates = np.array([
+        #     (x + int(w / 2), y),
+        #     (x + int(w / 2) - int(w / 10),
+        #      y - int(IDENTIFIED_IMG_SIZE / 3)),
+        #     (x + int(w / 2) + int(w / 10),
+        #      y - int(IDENTIFIED_IMG_SIZE / 3)),
+        # ])
+        # cv2.drawContours(img, [triangle_coordinates], 0, info_box_color, -1)
         cv2.rectangle(
             img,
             (x + int(w / 5),
@@ -545,21 +535,21 @@ def overlay_age_gender(
         cv2.putText(
             img, analysis_report,
             (x + int(w / 3.5), y - int(IDENTIFIED_IMG_SIZE / 2.1)),
-            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 111, 255), 2,
+            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 111, 255), 2,
         )
 
     # show its age and gender on the top of the image
     elif y + h + IDENTIFIED_IMG_SIZE - int(IDENTIFIED_IMG_SIZE / 5) < img.shape[0]:
-        triangle_coordinates = np.array([
-            (x + int(w / 2), y + h),
-            (x + int(w / 2) - int(w / 10),
-             y + h + int(IDENTIFIED_IMG_SIZE / 3),
-             ),
-            (x + int(w / 2) + int(w / 10),
-             y + h + int(IDENTIFIED_IMG_SIZE / 3),
-             ),
-        ])
-        cv2.drawContours(img, [triangle_coordinates], 0, info_box_color, -1)
+        # triangle_coordinates = np.array([
+        #     (x + int(w / 2), y + h),
+        #     (x + int(w / 2) - int(w / 10),
+        #      y + h + int(IDENTIFIED_IMG_SIZE / 3),
+        #      ),
+        #     (x + int(w / 2) + int(w / 10),
+        #      y + h + int(IDENTIFIED_IMG_SIZE / 3),
+        #      ),
+        # ])
+        # cv2.drawContours(img, [triangle_coordinates], 0, info_box_color, -1)
         cv2.rectangle(
             img, (x + int(w / 5), y + h + int(IDENTIFIED_IMG_SIZE / 3)), (
                 x + w - int(w / 5),
@@ -569,7 +559,7 @@ def overlay_age_gender(
         cv2.putText(
             img, analysis_report,
             (x + int(w / 3.5), y + h + int(IDENTIFIED_IMG_SIZE / 1.5)),
-            cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 111, 255), 2,
+            cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 111, 255), 2,
         )
 
     return img
@@ -577,6 +567,14 @@ def overlay_age_gender(
 
 if __name__ == '__main__':
     # Run analysis on cam feed
+    db = DB()
+    person_hash = face.record(enforce_num=True)
+    name = input("Enter name of person:")
+    if len(name) < 1:
+        name = None
+    db.set_name(person_hash.name, name=name)
+    img_db_path = person_hash.resolve().as_posix()
     analysis(
-        db_path=face.record(enforce_num=True).resolve().as_posix()
+        db_path=img_db_path,
+        person_name=name
     )
