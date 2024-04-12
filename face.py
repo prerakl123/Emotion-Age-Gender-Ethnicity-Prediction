@@ -9,7 +9,7 @@ from cv2.data import haarcascades
 hcc = cv2.CascadeClassifier(haarcascades + 'haarcascade_frontalface_default.xml')
 
 
-def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool = False) -> Path:
+def create_img_db_from_cam(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool = False) -> Path:
     """
     Captures and detects faces, then saves in a
     :param source: source of video (camera by default)
@@ -71,4 +71,4 @@ def record(source=0, seconds: float = 5.0, num_pics: int = 25, enforce_num: bool
 
 
 if __name__ == '__main__':
-    print(record(seconds=10.0, enforce_num=True))
+    print(create_img_db_from_cam(seconds=10.0, enforce_num=True))

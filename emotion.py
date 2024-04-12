@@ -24,7 +24,7 @@ TEXT_COLOR = (255, 255, 255)
 
 
 def run_raw_stream():
-    db_path = face.record(enforce_num=True)
+    db_path = face.create_img_db_from_cam(enforce_num=True)
     print(db_path.resolve().as_posix())
     DeepFace.stream(db_path.resolve().as_posix(), detector_backend='opencv', time_threshold=0, frame_threshold=0)
 
