@@ -8,6 +8,8 @@ __pycache__
 db
 db/*
 
+*.zip
+
 *.mp4
-*,jpg
+*.jpg
 *.png
