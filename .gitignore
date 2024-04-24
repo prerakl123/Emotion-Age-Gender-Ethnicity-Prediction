@@ -7,9 +7,12 @@ __pycache__
 
 db
 db/*
+*.db
 
 *.zip
 
 *.mp4
 *.jpg
 *.png
+*.h5
+*.csv
