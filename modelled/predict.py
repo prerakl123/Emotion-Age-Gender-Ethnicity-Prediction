@@ -36,8 +36,8 @@ age_map = {
 }
 
 gender_map = {
-    1: "Female",
-    0: "Male"
+    0: "Male",
+    1: "Female"
 }
 
 ethnicity_map = {
