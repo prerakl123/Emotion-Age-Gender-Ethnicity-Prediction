@@ -1,0 +1,161 @@
+Description:
+In this audio presentation, we delve into the fascinating world of facial emotion, gender, ethnicity, and age prediction using convolutional neural networks (CNNs). We'll explore the datasets, model architectures, and training processes involved in building these predictive models.
+
+Facial Emotion Recognition:
+Facial emotion recognition is the process of identifying and categorizing human emotions from facial expressions. It plays a crucial role in various applications, including human-computer interaction, healthcare, and marketing.
+
+Description of Emotion Dataset:
+The emotion dataset comprises images labeled with seven primary emotions: Anger, Disgust, Fear, Sadness, Happy, Surprised, and Neutral. Each image is represented as a list of grayscale pixel values, along with an indication of whether it's for training or testing.
+
+Description of Age, Gender, Ethnicity Dataset:
+This dataset includes images annotated with age, gender, and ethnicity information. The age column ranges from 1 to 116 years, while ethnicity is categorized into five groups: White, Black, Asian, Indian, and Hispanic. Gender is binary, with 0 representing male and 1 representing female.
+
+Steps to Build the Models:
+We'll construct four distinct models for emotion, age, gender, and ethnicity prediction, each tailored to their respective tasks.
+
+Architecture of the Models:
+Emotion Model:
+
+The emotion model consists of multiple convolutional layers followed by batch normalization, max-pooling, dropout, and dense layers.
+It starts with 64 filters, gradually increasing to 256, with dropout regularization to prevent overfitting.
+The output layer employs softmax activation for multi-class classification.
+Age Model:
+
+Similar to the emotion model, the age prediction model comprises convolutional layers, batch normalization, max-pooling, dropout, and dense layers.
+It predicts age using a softmax output layer with seven age categories.
+Gender Model:
+
+The gender model utilizes simpler architecture with fewer layers.
+It employs convolutional and dense layers, with dropout regularization.
+The output layer uses a sigmoid activation function for binary gender classification.
+Ethnicity Model:
+
+The ethnicity model shares a similar architecture with the age and emotion models.
+It predicts ethnicity using a softmax output layer with five categories.
+Description of Model Layers:
+
+Convolutional layers extract features from input images.
+Batch normalization stabilizes and accelerates the training process.
+Max-pooling reduces the spatial dimensions of feature maps.
+Dropout prevents overfitting by randomly deactivating neurons during training.
+Training and Evaluation Process:
+
+We compile each model with categorical cross-entropy loss and the Adam optimizer.
+Training occurs over multiple epochs with a defined batch size and learning rate.
+We incorporate early stopping and learning rate reduction on plateau to prevent overfitting and improve convergence.
+This comprehensive approach ensures robust prediction capabilities across facial emotion, gender, ethnicity, and age categories, paving the way for diverse applications in computer vision and beyond.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Title: Facial Attribute Prediction Using Convolutional Neural Networks
+
+In this presentation, we will explore the application of convolutional neural networks (CNNs) for facial attribute prediction, encompassing emotions, age, gender, and ethnicity. We will delve into the datasets employed, the design of the models, and the training processes involved.
+
+Facial Emotion Recognition
+
+Facial emotion recognition is a computer vision technique that automatically identifies and categorizes human emotions from facial expressions. This technology finds applications in various fields, including human-computer interaction, healthcare, and marketing research.
+
+Dataset Description: Emotion Recognition
+
+The emotion recognition dataset consists of images labeled with the seven primary emotions: anger, disgust, fear, sadness, happiness, surprise, and neutral. Each image is represented as a grayscale pixel intensity array, along with a corresponding label indicating its purpose for training or testing the model.
+
+Dataset Description: Age, Gender, Ethnicity Recognition
+
+This dataset comprises images annotated with age, gender, and ethnicity information. The age labels range from 1 to 116 years. Ethnicity is categorized into five groups: White, Black, Asian, Indian, and Hispanic. Gender is represented as a binary value, with 0 signifying male and 1 signifying female.
+
+For both the types of datasets the images undergo a normalization of 48 by 48 pixels.
+
+Model Development
+
+Four independent CNN models will be constructed, specifically designed for predicting emotions, age, gender, and ethnicity.
+
+Model Architecture
+
+Emotion Model: This model employs stacked convolutional layers followed by batch normalization, max-pooling, dropout regularization, and fully-connected layers. The number of filters progressively increases from 64 to 256, and dropout is utilized to mitigate overfitting. The final layer leverages softmax activation for multi-class classification of emotions.
+
+Age Model: Similar to the emotion model, this model utilizes convolutional layers, batch normalization, max-pooling, dropout, and fully-connected layers. It predicts age using a softmax output layer with seven categories representing different age groups.
+
+Gender Model: This model adopts a simpler architecture with fewer layers, consisting of convolutional and fully-connected layers with dropout for regularization. The output layer employs a sigmoid activation function for binary classification of gender.
+
+Ethnicity Model: This model shares a similar architecture with the age and emotion models. It predicts ethnicity using a softmax output layer with five categories corresponding to the ethnic classifications in the dataset.
+
+Model Layer Descriptions
+
+Convolutional Layers:
+Apply filters to extract spatial features from the input data, identifying patterns and edges within the images.
+These features serve as building blocks for higher-level recognition tasks.
+
+Batch Normalization:
+Introduces normalization across mini-batches during training, accelerating the learning process.
+Stabilizes training by mitigating internal covariate shift, leading to faster convergence.
+
+Max Pooling:
+Down samples the feature maps generated by convolutional layers, reducing computational complexity.
+Captures the most significant elements within a local region, promoting translational invariance.
+
+Dropout:
+Randomly deactivates a specific proportion of neurons during training, preventing overfitting.
+Enforces the model to learn robust features that are not overly reliant on any single neuron.
+
+Flatten Layer:
+Reshapes the multi-dimensional output of convolutional layers into a one-dimensional vector.
+Prepares the data for feeding into fully-connected layers for classification purposes.
+
+Dense Layers:
+Comprise fully-connected neurons, where each neuron in a layer is connected to all neurons in the preceding layer.
+Perform linear transformations on the input data, ultimately leading to class predictions.
+
+Each model has been compiled using categorical cross-entropy loss as the objective function and the Adam optimizer for training. The training process spans 350 epochs for the emotion model and 200 epochs for the age, gender and ethnicity models, with a defined batch size of 64 batches and a minimum learning rate of 0.0001. To prevent overfitting and enhance convergence, early stopping and learning rate reduction techniques have been employed with a patience level of 10 on early stopping and 10 on Reduce LR on Plateau.
+
+GRAPHS
+
+The training graphs here show us the Training and Validation losses. For our first graph for the emotion model the graph curves out perfectly, portraying the accuracy of the model being neither overfitting nor underfitting.
+
+The training graph of the Age model has a higher standard deviation thus indicating that the model is somewhat overfitting and hasn't performed well on the test and validation sets, thus implying that data which might be new for the model may be inaccurately predicted.
+
+The training graph of Gender model has a lower standard deviation and the graph elbow curve is too steep thus indicating that several types of images that fall under different categories might be inaccurately predicted under one of the dominant categories with more dataset footprint.
+
+The ethnicity model's graph is somewhat similar to the age model's training graph but it has lesser overfitting results, thus having lower inaccuracy.
+
+Emotion: 0.695179700851440
+Age: 0.6589326858520508
+Gender: 0.8842016458511353
+Ethnicity: 0.8135414719581604
+
+These comprehensive approaches exemplified in the report, foster the development of robust models for predicting facial attributes, including emotions, age, gender, and ethnicity. These models have the potential to unlock innovative applications in computer vision and beyond.
